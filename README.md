@@ -16,17 +16,14 @@ To run the application locally, follow these steps:
    git clone https://github.com/developjua/weatherforecast.git
 
 
-
 2. Navigate to the project directory:
      ```bash
     cd weatherapp
 
 
-
 3. Install dependencies:
       ```bash
     npm install
-
 
 4. Start the development server:
       ```bash
@@ -52,8 +49,8 @@ To run the application locally, follow these steps:
 
 ## Configuration
 
-You have to set the API key go to Tomorrow.io signup for accounnt that free that you get a apikey include that in .env file
-RREACT_APP_API_KEY=" ".
+You have to set the API key go to Tomorrow.io signup for accounnt that free that you get a apikey and create .env file and set 
+RREACT_APP_API_KEY="YOUR_API_KEY ".
 
 ## Issues and Troubleshooting
 
