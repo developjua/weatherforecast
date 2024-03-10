@@ -12,24 +12,24 @@ This assignment involves building a real-time weather forecasting application us
 To run the application locally, follow these steps:
 
 1. Clone the repository to your local machine using the following command:
- ```bash
+    ```bash
    git clone https://github.com/developjua/weatherforecast.git
 
 
 
 2. Navigate to the project directory:
- ```bash
+    ```bash
     cd weatherapp
 
 
 
 3. Install dependencies:
- ```bash
+    ```bash
     npm install
 
 
 4. Start the development server:
- ```bash
+    ```bash
    npm run dev 
 
 
