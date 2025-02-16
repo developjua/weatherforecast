@@ -52,7 +52,7 @@ const WeatherForecast = () => {
       try {
         // Fetch weather forecast data from API
         const response = await axios.get(
-          `https://api.tomorrow.io/v4/weather/forecast?location=${location}&apikey=${process.env.REACT_APP_API_KEY}`
+          `https://api.tomorrow.io/v4/weather/forecast?location=${location}&apikey=${import.meta.env.VITE_API_KEY}`
         );
 
         // Update forecast and location state with API response data

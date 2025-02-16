@@ -50,7 +50,7 @@ const RealTimeForecast = () => {
             try {
               setLoading(true);
               const response = await axios.get(
-                `https://api.tomorrow.io/v4/weather/realtime?location=${latitude},${longitude}&apikey=${process.env.REACT_APP_API_KEY}`
+                `https://api.tomorrow.io/v4/weather/realtime?location=${latitude},${longitude}&apikey=${import.meta.env.VITE_API_KEY}`
               );
               setForecast(response.data);
               setLocation(response.data.location);
@@ -93,11 +93,14 @@ const RealTimeForecast = () => {
       setIsThrottled(true);
       setLoading(true);
       setManualLocation(location);
+      
       try {
         const response = await axios.get(
-          `https://api.tomorrow.io/v4/weather/realtime?location=${location}&apikey=${process.env.REACT_APP_API_KEY}`
+          `https://api.tomorrow.io/v4/weather/realtime?location=${location}&apikey=${import.meta.env.VITE_API_KEY}`
         );
+        console.log(response)
         setForecast(response.data);
+      
         setLocation(response.data.location);
       } catch (error) {
         console.error(
