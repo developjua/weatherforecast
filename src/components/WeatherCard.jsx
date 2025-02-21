@@ -53,7 +53,7 @@ const WeatherCard = ({ data, location }) => {
         elevation={3}
         sx={{
           background: `linear-gradient(45deg, ${
-            isDarkMode ? "#263238, #37474F" : "#FF6D00, #FFA000"
+            isDarkMode ? "#263238, #37474F" : "#FF8D00, #FFA100"
           })`,
         }}
       >

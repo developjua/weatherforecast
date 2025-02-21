@@ -22,6 +22,9 @@ export default function Home() {
   const handleForecastClick = () => {
     navigate("/forecast");
   };
+    const handleweatherhistorytClick = () => {
+      navigate("/WeatherRecentHistory");
+    };
 
   return (
     <motion.div
@@ -81,6 +84,17 @@ export default function Home() {
                 onClick={handleRealTimeClick}
               >
                 Real-Time Forecasting
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                component="span"
+                color="primary"
+                onClick={handleweatherhistorytClick}
+                style={{ marginLeft: isSmallScreen ? "0" : "1px" }}
+              >
+                Weather Recent History
               </Button>
             </Grid>
             <Grid item>

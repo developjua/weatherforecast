@@ -17,32 +17,35 @@ import {
 } from "react-router-dom";
 import RealTimeForecast from "./components/RealTimeForecast";
 import Forecast from "./components/Forecast";
+import WeatherRecentHistory from "./components/WeatherRecentHistory";
 
 function App(){
   
 
 
   return (
-   
-      <DarkModeProvider>
-        {/* Provides dark mode context */}
-        <NavBar /> {/* Renders navigation bar component */}
-        <Router>
-          {/* Sets up React router */}
-          <Routes>
-            {/* Defines routes */}
-            <Route path="/" element={<Home />} /> {/* Home route */}
-            <Route path="/Realtime" element={<RealTimeForecast />} />
-            {/* Real-time forecast route */}
-            <Route path="/forecast" element={<Forecast />} />
-            {/* Forecast route */}
-            {/* Redirect to home if route is not specified */}
-            <Route path="*" element={<Navigate to="/" />} />
-            {/* Default redirect */}
-          </Routes>
-        </Router>
-      </DarkModeProvider>
-  
+    <DarkModeProvider>
+      {/* Provides dark mode context */}
+      <NavBar /> {/* Renders navigation bar component */}
+      <Router>
+        {/* Sets up React router */}
+        <Routes>
+          {/* Defines routes */}
+          <Route path="/" element={<Home />} /> {/* Home route */}
+          <Route path="/Realtime" element={<RealTimeForecast />} />
+          {/* Real-time forecast route */}
+          <Route path="/forecast" element={<Forecast />} />
+          <Route
+            path="/WeatherRecentHistory"
+            element={<WeatherRecentHistory />}
+          />
+          {/* Forecast route */}
+          {/* Redirect to home if route is not specified */}
+          <Route path="*" element={<Navigate to="/" />} />
+          {/* Default redirect */}
+        </Routes>
+      </Router>
+    </DarkModeProvider>
   );
 }
 

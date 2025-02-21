@@ -6,6 +6,10 @@ import {
   TextField,
   CircularProgress,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import axios from "axios";
 import WeatherCard from "./WeatherCard";
@@ -14,14 +18,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDarkMode } from "../contextstore/DarkModeContext";
 import { useNavigate } from "react-router-dom";
 
-const WeatherForecast = () => {
-  // State variables for managing weather forecast data and UI
-  const [forecast, setForecast] = useState([]);
+const WeatherRecentHistory = () => {
+  // State variables for managing weather history data and UI
+  const [history, setHistory] = useState([]);
   const [location, setLocation] = useState({});
   const [manualLocation, setManualLocation] = useState("");
   const [isThrottled, setIsThrottled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isGeolocationAvailable, setIsGeolocationAvailable] = useState(false);
+  const [dataType, setDataType] = useState("hourly"); // Default to hourly data
 
   // Accessing dark mode state from context
   const { isDarkMode } = useDarkMode();
@@ -33,6 +37,8 @@ const WeatherForecast = () => {
   const handleBackToHomeClick = () => {
     navigate("/");
   };
+
+  // Toast style based on dark mode
   const getToastStyle = () => ({
     style: {
       background: isDarkMode ? "#333" : "#fff",
@@ -40,38 +46,40 @@ const WeatherForecast = () => {
     },
   });
 
-
   // Throttled function to handle manual location input
   const throttledHandleManualLocation = useCallback(
     async (location) => {
       if (isThrottled) return;
 
-            if (!location.trim()) {
-              toast.error("Please enter a location.", getToastStyle());
-              return;
-            }
+      // Check if location is empty
+      if (!location.trim()) {
+        toast.error("Please enter a location.", getToastStyle());
+        return;
+      }
 
       setIsThrottled(true);
       setLoading(true);
       setManualLocation(location);
       try {
-        // Fetch weather forecast data from API
+        // Fetch weather history data from API
         const response = await axios.get(
-          `https://api.tomorrow.io/v4/weather/forecast?location=${location}&apikey=${import.meta.env.VITE_API_KEY}`
+          `https://api.tomorrow.io/v4/weather/history/recent?location=${location}&apikey=${
+            import.meta.env.VITE_API_KEY
+          }`
         );
 
-        // Update forecast and location state with API response data
-        setForecast(response.data.timelines.daily);
+        // Update history and location state with API response data
+        setHistory(response.data.timelines[dataType]); // Use selected data type (hourly/daily)
         setLocation(response.data.location);
       } catch (error) {
         console.error(
-          "Error fetching weather forecast with this location:",
+          "Error fetching weather history with this location:",
           error
         );
-        // Notify user of error when fetching forecast data
+        // Notify user of error when fetching history data
         toast.error(
-          "Failed to fetch weather forecast data for this location.",
-          ToastStyle
+          "Failed to fetch weather history data for this location.",
+          getToastStyle()
         );
       } finally {
         // Reset loading and throttling states
@@ -79,8 +87,13 @@ const WeatherForecast = () => {
         setIsThrottled(false);
       }
     },
-    [isThrottled]
+    [isThrottled, dataType, isDarkMode] // Add isDarkMode as a dependency
   );
+
+  // Function to handle data type change (hourly/daily)
+  const handleDataTypeChange = (event) => {
+    setDataType(event.target.value);
+  };
 
   return (
     <Box
@@ -103,14 +116,15 @@ const WeatherForecast = () => {
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
+        toastStyle={getToastStyle().style} // Apply dynamic toast style
       />
 
-      {/* Heading for weather forecast */}
+      {/* Heading for weather history */}
       <Typography
         variant="h5"
         sx={{ marginTop: "20px", color: isDarkMode ? "#fff" : "#333" }}
       >
-        Weather Forecast
+        Weather Recent History
       </Typography>
 
       {/* Text field for manual location input */}
@@ -127,13 +141,30 @@ const WeatherForecast = () => {
         }}
       />
 
-      {/* Button to fetch forecast for manual location */}
+      {/* Dropdown to select data type (hourly/daily) */}
+      <FormControl
+        variant="outlined"
+        sx={{ width: "50%", marginBottom: "1rem" }}
+      >
+        <InputLabel id="data-type-label">Data Type</InputLabel>
+        <Select
+          labelId="data-type-label"
+          value={dataType}
+          onChange={handleDataTypeChange}
+          label="Data Type"
+        >
+          <MenuItem value="hourly">Hourly</MenuItem>
+          <MenuItem value="daily">Daily</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Button to fetch history for manual location */}
       <Button
         variant="contained"
         color="primary"
         onClick={() => throttledHandleManualLocation(manualLocation)}
       >
-        Get Forecast
+        Get History
       </Button>
 
       {/* Loading indicator */}
@@ -143,13 +174,13 @@ const WeatherForecast = () => {
         </Box>
       )}
 
-      {/* Grid to display weather forecast cards */}
+      {/* Grid to display weather history cards */}
       <Box mt={2}>
         <Grid container spacing={5}>
-          {forecast.map((val) => (
+          {history.map((val) => (
             <Grid item key={val.time} xs={12} sm={6} md={4} lg={4}>
-              {/* Render individual weather forecast card */}
-              <WeatherCard data={val} location={location} />
+              {/* Render individual weather history card */}
+              <WeatherCard data={val} location={location} dataType={dataType} />
             </Grid>
           ))}
         </Grid>
@@ -169,4 +200,4 @@ const WeatherForecast = () => {
   );
 };
 
-export default WeatherForecast;
+export default WeatherRecentHistory;

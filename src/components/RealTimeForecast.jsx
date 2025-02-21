@@ -84,12 +84,21 @@ const RealTimeForecast = () => {
   const handleBackToHomeClick = () => {
     navigate("/");
   };
-  
+    const getToastStyle = () => ({
+      style: {
+        background: isDarkMode ? "#333" : "#fff",
+        color: isDarkMode ? "#fff" : "#333",
+      },
+    });
 
   // Throttled function for fetching forecast based on manual location input
   const throttledHandleManualLocation = useCallback(
     async (location) => {
       if (isThrottled) return;
+            if (!location.trim()) {
+              toast.error("Please enter a location.", getToastStyle());
+              return;
+            }
       setIsThrottled(true);
       setLoading(true);
       setManualLocation(location);
