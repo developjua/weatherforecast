@@ -27,51 +27,50 @@ const RealTimeForecast = () => {
 
   // Router navigation
   const navigate = useNavigate();
-    const ToastStyle = {
-      style: {
-        background: isDarkMode ? "#333" : "#fff",
-        color: isDarkMode ? "#fff" : "#333",
-      },
-    };
+
+  // Dynamic toast style based on dark mode
+  const getToastStyle = () => ({
+    style: {
+      background: isDarkMode ? "#333" : "#fff",
+      color: isDarkMode ? "#fff" : "#333",
+    },
+  });
 
   // Fetch forecast based on current geolocation
   useEffect(() => {
     const fetchLocation = () => {
-      // Add a flag to track whether geolocation retrieval has been attempted
-      let geolocationRetrieved = false;
-
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            // Set the flag to true once geolocation is successfully retrieved
-            geolocationRetrieved = true;
-
             const { latitude, longitude } = position.coords;
             try {
               setLoading(true);
               const response = await axios.get(
-                `https://api.tomorrow.io/v4/weather/realtime?location=${latitude},${longitude}&apikey=${import.meta.env.VITE_API_KEY}`
+                `https://api.tomorrow.io/v4/weather/realtime?location=${latitude},${longitude}&apikey=${
+                  import.meta.env.VITE_API_KEY
+                }`
               );
-              setForecast(response.data);
+              setForecast(response.data); // Update forecast with the entire response
               setLocation(response.data.location);
             } catch (error) {
               console.error("Error fetching real-time forecast:", error);
-              toast.error("Failed to fetch real-time forecast data.");
+              toast.error(
+                "Failed to fetch real-time forecast data.",
+                getToastStyle()
+              );
             } finally {
               setLoading(false);
             }
             setIsGeolocationAvailable(true);
           },
-          () => {
-            // Check the flag before showing the error message
-            if (!geolocationRetrieved) {
-              toast.error("Geolocation is disabled.", ToastStyle);
-              setIsGeolocationAvailable(false);
-            }
+          (error) => {
+            console.error("Geolocation error:", error);
+            toast.error("Geolocation is disabled or denied.", getToastStyle());
+            setIsGeolocationAvailable(false);
           }
         );
       } else {
-        toast.error("Geolocation is not available.", ToastStyle);
+        toast.error("Geolocation is not available.", getToastStyle());
         setIsGeolocationAvailable(false);
       }
     };
@@ -79,37 +78,33 @@ const RealTimeForecast = () => {
     fetchLocation();
   }, []);
 
-
   // Handle back to home button click
   const handleBackToHomeClick = () => {
     navigate("/");
   };
-    const getToastStyle = () => ({
-      style: {
-        background: isDarkMode ? "#333" : "#fff",
-        color: isDarkMode ? "#fff" : "#333",
-      },
-    });
 
   // Throttled function for fetching forecast based on manual location input
   const throttledHandleManualLocation = useCallback(
     async (location) => {
       if (isThrottled) return;
-            if (!location.trim()) {
-              toast.error("Please enter a location.", getToastStyle());
-              return;
-            }
+
+      // Check if location is empty
+      if (!location.trim()) {
+        toast.error("Please enter a location.", getToastStyle());
+        return;
+      }
+
       setIsThrottled(true);
       setLoading(true);
       setManualLocation(location);
-      
+
       try {
         const response = await axios.get(
-          `https://api.tomorrow.io/v4/weather/realtime?location=${location}&apikey=${import.meta.env.VITE_API_KEY}`
+          `https://api.tomorrow.io/v4/weather/realtime?location=${location}&apikey=${
+            import.meta.env.VITE_API_KEY
+          }`
         );
-        console.log(response)
-        setForecast(response.data);
-      
+        setForecast(response.data.data); // Update forecast with the entire response
         setLocation(response.data.location);
       } catch (error) {
         console.error(
@@ -118,14 +113,14 @@ const RealTimeForecast = () => {
         );
         toast.error(
           "Failed to fetch real-time forecast data for manual location.",
-          ToastStyle
+          getToastStyle()
         );
       } finally {
         setLoading(false);
         setIsThrottled(false);
       }
     },
-    [isThrottled]
+    [isThrottled, getToastStyle] // Include getToastStyle in dependencies
   );
 
   // Render
@@ -147,6 +142,7 @@ const RealTimeForecast = () => {
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
+        toastStyle={getToastStyle().style} // Apply dynamic toast style
       />
       <Typography
         variant="h5"
@@ -189,7 +185,7 @@ const RealTimeForecast = () => {
       {/* Display forecast */}
       {forecast && !loading && (
         <Box mt={2}>
-          <WeatherCard data={forecast.data} location={location} />
+          <WeatherCard data={forecast} location={location} />
         </Box>
       )}
 
